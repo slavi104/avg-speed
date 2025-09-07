@@ -1,0 +1,13 @@
+# Enforce UTF-8 for all served files (Apache)
+AddDefaultCharset UTF-8
+
+# Explicit types with charset
+AddType 'text/html; charset=UTF-8' .html
+AddType 'text/css; charset=UTF-8' .css
+AddType 'application/javascript; charset=UTF-8' .js
+
+# Also map extensions to UTF-8
+AddCharset UTF-8 .html .htm .css .js .json .txt
+
+
+

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Average Speed</title>
+    <meta name="theme-color" content="#0b1520">
+    <style>
+        :root {
+            --bg:#0b1520;        /* deep dark */
+            --panel:#111b27;     /* card */
+            --muted:#7a8a9a;     /* text secondary */
+            --accent:#22c55e;    /* green */
+            --accent-weak:#16a34a;
+            --danger:#ef4444;
+        }
+        html,body { height:100%; }
+        body {
+            margin:0; background:var(--bg); color:#e6edf3; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; align-items:center; }
+        .container { width:100%; max-width:720px; padding:16px; box-sizing:border-box; }
+        .card { background:var(--panel); border-radius:16px; padding:18px; box-shadow:0 6px 20px rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.04); }
+        .row { display:flex; gap:16px; }
+        .center { text-align:center; }
+        .title { display:flex; align-items:center; gap:8px; color:var(--muted); font-weight:600; letter-spacing:.2px; }
+        .big { font-size:120px; font-weight:800; color:#22c55e; line-height:1; }
+        .big .unit { font-size:32px; font-weight:700; color:#b9d3c2; }
+        .medium { font-size:54px; font-weight:800; color:#22c55e; }
+        .muted { color:var(--muted); }
+        .kpis { display:flex; justify-content:space-between; gap:12px; font-weight:700; }
+        .kpis .box { flex:1; text-align:center; padding:14px 10px; border:1px solid rgba(255,255,255,.06); border-radius:12px; background:rgba(255,255,255,.02); }
+        .btn { border:none; border-radius:14px; padding:16px 18px; font-weight:800; font-size:18px; color:#07130c; background:linear-gradient(180deg,#34d061,#18b74f); width:100%; display:flex; align-items:center; justify-content:center; gap:10px; }
+        .btn:disabled { filter:grayscale(.3) brightness(.8); opacity:.7; }
+        .btn.secondary { background:#0f1720; color:#cbd5e1; border:1px solid rgba(255,255,255,.08); }
+        .btn.danger { background:linear-gradient(180deg,#ef4444,#dc2626); color:#fff; }
+        .pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(34,197,94,.12); color:#a7f3d0; font-weight:700; font-size:14px; }
+        .rangeBox { margin-top:16px; padding:14px 16px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:12px; }
+        .ad { margin:14px 0; background:#0e171f; border:1px dashed rgba(255,255,255,.18); border-radius:12px; color:#89a3b5; padding:16px; text-align:center; }
+        .footer { color:#6b7785; font-size:12px; text-align:center; padding:12px 0 24px; }
+        @media (max-width:420px){ .big{font-size:96px;} .medium{font-size:42px;} }
+        /* Ranges table */
+        table.dataTable { width:100%; border-collapse:collapse; border-spacing:0; }
+        table.dataTable thead th { background:#0f1a25; color:#c3d1dc; text-align:left; font-weight:800; font-size:12px; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); }
+        table.dataTable tbody td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); font-weight:600; color:#d9e3ea; font-size:12px; white-space:normal; word-break:break-word; }
+        table.dataTable tbody tr:nth-child(odd) td { background:rgba(255,255,255,.02); }
+        table.dataTable tbody tr.active td { background:rgba(34,197,94,.12); color:#c6f3d7; }
+        @media (max-width:420px){
+            table.dataTable thead th, table.dataTable tbody td { padding:6px 8px; font-size:11px; }
+        }
+    </style>
+    <!-- Google AdSense placeholder (replace client and slot IDs when you go live) -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body>
+    <div class="container">
+        <div class="card center" id="avgCard">
+            <div class="title">📍 <span>Average Speed</span></div>
+            <div class="big" id="avgSpeedValue">0<span class="unit"> km/h</span></div>
+        </div>
+
+        <div class="ad">
+            <!-- AdSense block: Top banner -->
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="111111" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <!-- <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script> -->
+            Ads
+        </div>
+
+        <div class="card center">
+            <div class="title">🧭 <span>Current Speed</span></div>
+            <div class="medium" id="currentSpeed">0 km/h</div>
+
+            <div class="kpis" style="margin-top:14px;">
+                <div class="box">
+                    <div class="muted" style="font-weight:600;">Distance</div>
+                    <div id="distanceKm">0 m</div>
+                </div>
+                <div class="box">
+                    <div class="muted" style="font-weight:600;">Duration</div>
+                    <div id="durationMin">0:00</div>
+                </div>
+            </div>
+
+            <div class="rangeBox">
+                <div class="muted" style="font-weight:600;">Active range</div>
+                <div id="activeRange">...</div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:16px;">
+                <button class="btn" id="startBtn">Start</button>
+                <button class="btn secondary" id="resetBtn" title="Reset">Reset</button>
+            </div>
+        </div>
+
+        <div class="ad">
+            <!-- AdSense block: Inline -->
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="222222" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <!-- <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script> -->
+            Ads
+        </div>
+
+        <table class="dataTable" id="rangesTable" style="margin-top:8px;">
+            <thead>
+                <tr>
+                    <th>Road</th>
+                    <th>Start</th>
+                    <th>End</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="footer">Use at your own risk. Works offline after load.</div>
+    </div>
+
+    <script>
+    // ===== Configuration =====
+    // Where to add hardcoded start/end coordinates:
+    // Edit the "ROAD_RANGES" array below. Each item has name, start, end.
+    // Coordinates are [lat, lon]. The calculator auto-starts when within
+    // start.radiusMeters of start point and will stop at end point.
+    const ROAD_RANGES = [
+        // Example (replace with precise coordinates)
+        // { road:"AM \"Trakia\"", label:"Vakarel → Ihtiman", start:{lat:42.5999, lon:23.7320, radiusMeters:400}, end:{lat:42.4330, lon:23.8220, radiusMeters:400} },
+
+        // ===== Paste your ranges here =====
+        // NOTE: The following are placeholders. Replace with accurate coordinates for each km marker.
+        { road:"AM \"Trakia\"", label:"Vakarel (km 24+288) → Ihtiman (km 43+448)", start:{lat:42.5667, lon:23.9333, radiusMeters:500}, end:{lat:42.4367, lon:23.8189, radiusMeters:500} },
+        { road:"AM \"Trakia\"", label:"Ihtiman (km 43+448) → Vakarel (km 24+288)", start:{lat:42.4367, lon:23.8189, radiusMeters:500}, end:{lat:42.5667, lon:23.9333, radiusMeters:500} },
+        { road:"AM \"Trakia\"", label:"Tsalapitsa (km 107+663) → Radinovo (km 118+599)", start:{lat:42.1500, lon:24.5833, radiusMeters:500}, end:{lat:42.1167, lon:24.6000, radiusMeters:500} },
+        { road:"AM \"Trakia\"", label:"Radinovo (km 118+599) → Tsalapitsa (km 107+663)", start:{lat:42.1167, lon:24.6000, radiusMeters:500}, end:{lat:42.1500, lon:24.5833, radiusMeters:500} },
+        { road:"AM \"Hemus\"", label:"Belokopitovo (km 340+293) → Kaspichan (km 361+581)", start:{lat:43.2667, lon:27.0000, radiusMeters:600}, end:{lat:43.3167, lon:27.2000, radiusMeters:600} },
+        { road:"AM \"Hemus\"", label:"Kaspichan (km 361+581) → Belokopitovo (km 340+293)", start:{lat:43.3167, lon:27.2000, radiusMeters:600}, end:{lat:43.2667, lon:27.0000, radiusMeters:600} },
+        { road:"AM \"Hemus\"", label:"Devnya (km 399+703) → Ignatievo (km 418+126)", start:{lat:43.2167, lon:27.6000, radiusMeters:600}, end:{lat:43.2660, lon:27.7000, radiusMeters:600} },
+        { road:"AM \"Hemus\"", label:"Ignatievo (km 418+126) → Devnya (km 399+703)", start:{lat:43.2660, lon:27.7000, radiusMeters:600}, end:{lat:43.2167, lon:27.6000, radiusMeters:600} },
+        { road:"AM \"Struma\"", label:"Sandanski (km 143+945) → Damyanitsa (km 151+251)", start:{lat:41.5667, lon:23.2833, radiusMeters:500}, end:{lat:41.5660, lon:23.2167, radiusMeters:500} },
+        { road:"AM \"Struma\"", label:"Damyanitsa (km 151+251) → Sandanski (km 143+945)", start:{lat:41.5660, lon:23.2167, radiusMeters:500}, end:{lat:41.5667, lon:23.2833, radiusMeters:500} },
+        { road:"AM \"Struma\"", label:"Balgarchevo (km 90+219) → Pokrovnik (km 92+548)", start:{lat:41.9833, lon:23.0667, radiusMeters:500}, end:{lat:41.9833, lon:23.0500, radiusMeters:500} },
+        { road:"AM \"Struma\"", label:"Pokrovnik (km 92+548) → Balgarchevo (km 90+219)", start:{lat:41.9833, lon:23.0500, radiusMeters:500}, end:{lat:41.9833, lon:23.0667, radiusMeters:500} },
+        { road:"Northern Speed Tangent", label:"between 18 and Iliyantsi IC (km 50+427) → Chepintsi (km 60+705)", start:{lat:42.7370, lon:23.3230, radiusMeters:500}, end:{lat:42.7615, lon:23.3820, radiusMeters:500} },
+        { road:"Northern Speed Tangent", label:"Chepintsi (km 60+705) → between 18 and Iliyantsi IC (km 50+427)", start:{lat:42.7615, lon:23.3820, radiusMeters:500}, end:{lat:42.7370, lon:23.3230, radiusMeters:500} },
+        { road:"I-1", label:"Slatino (km 343+292) → Kocherinovo (km 353+878)", start:{lat:42.1167, lon:23.1333, radiusMeters:600}, end:{lat:42.0833, lon:23.0667, radiusMeters:600} },
+        { road:"I-1", label:"Kocherinovo (km 353+878) → Slatino (km 343+292)", start:{lat:42.0833, lon:23.0667, radiusMeters:600}, end:{lat:42.1167, lon:23.1333, radiusMeters:600} },
+        { road:"I-2", label:"Struyno (km 104+733) → Shumen (km 112+381)", start:{lat:43.3333, lon:26.9333, radiusMeters:600}, end:{lat:43.2833, lon:26.9333, radiusMeters:600} },
+        { road:"I-2", label:"Shumen (km 112+381) → Struyno (km 104+733)", start:{lat:43.2833, lon:26.9333, radiusMeters:600}, end:{lat:43.3333, lon:26.9333, radiusMeters:600} },
+        { road:"I-3", label:"Dolni Dabnik (km 100+471) → Telish (km 122+349)", start:{lat:43.3833, lon:24.4333, radiusMeters:700}, end:{lat:43.2833, lon:24.2000, radiusMeters:700} },
+        { road:"I-3", label:"Telish (km 122+349) → Dolni Dabnik (km 100+471)", start:{lat:43.2833, lon:24.2000, radiusMeters:700}, end:{lat:43.3833, lon:24.4333, radiusMeters:700} },
+        { road:"I-4", label:"Balgarski Izvor (km 13+536) → Sopot (km 22+734)", start:{lat:43.0000, lon:24.2167, radiusMeters:600}, end:{lat:42.9000, lon:24.7167, radiusMeters:600} },
+        { road:"I-4", label:"Sopot (km 22+734) → Balgarski Izvor (km 13+536)", start:{lat:42.9000, lon:24.7167, radiusMeters:600}, end:{lat:43.0000, lon:24.2167, radiusMeters:600} },
+    ];
+
+    // Minimum speed to consider movement (m/s) to filter GPS noise when stopped
+    const MOVING_THRESHOLD_MS = 0.8;
+    // Minimum distance jump to count (meters)
+    const MIN_SEGMENT_METERS = 2.5;
+
+    // ===== Helpers =====
+    const el = (id)=>document.getElementById(id);
+    function haversineMeters(lat1, lon1, lat2, lon2){
+        const R = 6371000; // Earth radius meters
+        const dLat = (lat2-lat1) * Math.PI/180;
+        const dLon = (lon2-lon1) * Math.PI/180;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+        const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R*c;
+    }
+    function metersPerSecondToKmh(ms){ return ms * 3.6; }
+    function format2(n){ return (Math.round(n*100)/100).toFixed(2); }
+
+    function isWithin(point, target){
+        const d = haversineMeters(point.lat, point.lon, target.lat, target.lon);
+        return d <= (target.radiusMeters || 300);
+    }
+
+    // ===== State =====
+    const state = {
+        watchId: null,
+        pollId: null,
+        gpsPending: false,
+        tracking: false,
+        startedAt: null,
+        elapsedMsAccumulated: 0,
+        lastFix: null,
+        distanceMeters: 0,
+        activeRange: null, // object from ROAD_RANGES
+        awaitingStart: true,
+    };
+
+    // ===== Core logic =====
+    function startManual(){
+        state.tracking = true; state.awaitingStart = false; state.startedAt = Date.now(); state.elapsedMsAccumulated = 0; state.distanceMeters = 0; state.lastFix = null;
+        updateUi();
+    }
+    function stopTracking(){
+        if(state.tracking && state.startedAt){
+            state.elapsedMsAccumulated += (Date.now() - state.startedAt);
+        }
+        state.tracking = false; state.startedAt = null;
+    }
+    function resetAll(){
+        state.tracking = false; state.awaitingStart = true; state.startedAt = null; state.elapsedMsAccumulated = 0; state.distanceMeters = 0; state.lastFix = null; state.activeRange = null;
+        updateUi();
+    }
+
+    function ensureWatch(){
+        if(state.watchId!=null) return;
+        if(!('geolocation' in navigator)) { alert('Geolocation is not available.'); return; }
+        state.watchId = navigator.geolocation.watchPosition(onPosition, onError, {
+            enableHighAccuracy:true, maximumAge:1000, timeout:10000
+        });
+    }
+
+    // Poll location every second to ensure real-time updates
+    function startPolling(){
+        if(state.pollId!=null) return;
+        if(!('geolocation' in navigator)) { alert('Geolocation is not available.'); return; }
+        // Start a single continuous watch to avoid repeated permission prompts
+        ensureWatch();
+        // Refresh UI every second so average speed progresses with time
+        state.pollId = setInterval(()=>{ updateUi(); }, 1000);
+    }
+    function stopPolling(){ if(state.pollId!=null){ clearInterval(state.pollId); state.pollId=null; } }
+
+    function onError(err){ console.warn('Geolocation error', err); }
+
+    function detectActiveRange(lat, lon){
+        const here = {lat, lon};
+        for(const r of ROAD_RANGES){
+            if(isWithin(here, r.start) || isWithin(here, r.end)){
+                return r;
+            }
+        }
+        return null;
+    }
+
+    function onPosition(pos){
+        const {latitude:lat, longitude:lon, speed} = pos.coords; // speed in m/s (may be null)
+        const now = Date.now();
+
+        // Determine active range and auto-start/stop (re-evaluate on every fix)
+        state.activeRange = detectActiveRange(lat, lon);
+        if(state.activeRange){
+            const atStart = isWithin({lat, lon}, state.activeRange.start);
+            const atEnd = isWithin({lat, lon}, state.activeRange.end);
+            // Immediately start when entering any range's start gate
+            if(state.awaitingStart && atStart){ startManual(); }
+            // Auto stop when reaching end gate and arm next auto-start
+            if(state.tracking && atEnd){ stopTracking(); state.awaitingStart = true; }
+        } else {
+            // Left all ranges
+            if(!state.tracking){ state.awaitingStart = true; }
+        }
+
+        // Distance accumulation
+        if(state.tracking){
+            if(state.lastFix){
+                const d = haversineMeters(state.lastFix.lat, state.lastFix.lon, lat, lon);
+                if(d >= MIN_SEGMENT_METERS){
+                    state.distanceMeters += d;
+                }
+            }
+            state.lastFix = {lat, lon, t: now};
+        }
+
+        // UI speeds
+        const currentMs = (typeof speed === 'number' && !Number.isNaN(speed)) ? Math.max(0, speed) : 0;
+        const currentKmh = metersPerSecondToKmh(currentMs);
+        el('currentSpeed').textContent = `${Math.round(currentKmh)} km/h`;
+
+        updateUi();
+    }
+
+    function updateUi(){
+        // Duration
+        let elapsedMs = state.elapsedMsAccumulated + (state.tracking && state.startedAt ? (Date.now()-state.startedAt) : 0);
+        let totalSeconds = Math.floor(elapsedMs/1000);
+        const minutes = Math.floor(totalSeconds/60);
+        const seconds = totalSeconds % 60;
+        el('durationMin').textContent = `${minutes}:${String(seconds).padStart(2,'0')}`;
+        const meters = Math.round(state.distanceMeters);
+        if(meters < 1000){
+            el('distanceKm').textContent = `${meters} m`;
+        } else {
+            const km = state.distanceMeters/1000;
+            // Show km with one decimal below 10 km, otherwise two decimals
+            const formattedKm = km < 10 ? (Math.round(km*10)/10).toFixed(1) : (Math.round(km*100)/100).toFixed(2);
+            el('distanceKm').textContent = `${formattedKm} km`;
+        }
+
+        // Average speed = distance / duration (use accumulated time)
+        let avgKmh = 0;
+        if(elapsedMs>0){
+            const hours = elapsedMs/3600000;
+            avgKmh = (state.distanceMeters/1000) / hours;
+        }
+        el('avgSpeedValue').innerHTML = `${Number.isFinite(avgKmh)?Math.round(avgKmh):0}<span class="unit"> km/h</span>`;
+
+        // Range label
+        el('activeRange').textContent = state.activeRange ? `${state.activeRange.road} — ${state.activeRange.label}` : 'No active range';
+        // Highlight active row in table
+        const tbody = document.querySelector('#rangesTable tbody');
+        if(tbody){
+            for(const tr of Array.from(tbody.children)) tr.classList.remove('active');
+            if(state.activeRange){
+                const idx = ROAD_RANGES.indexOf(state.activeRange);
+                const row = tbody.querySelector(`tr[data-idx="${idx}"]`);
+                if(row) row.classList.add('active');
+            }
+        }
+
+        // Buttons
+        const startBtn = el('startBtn');
+        startBtn.disabled = false;
+        if(state.tracking){
+            startBtn.classList.add('danger');
+            startBtn.textContent = 'Stop';
+        } else {
+            startBtn.classList.remove('danger');
+            startBtn.textContent = 'Start';
+        }
+    }
+
+    // ===== UI wiring =====
+    el('startBtn').addEventListener('click', ()=>{ if(state.tracking){ stopTracking(); } else { startManual(); } updateUi(); });
+    el('resetBtn').addEventListener('click', ()=>{ resetAll(); });
+    document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible'){ startPolling(); } else { stopPolling(); } });
+
+    // Kickoff
+    startPolling();
+    updateUi();
+    // Build ranges table
+    (function buildTable(){
+        const tbody = document.querySelector('#rangesTable tbody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        ROAD_RANGES.forEach((r, i)=>{
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-idx', String(i));
+            tr.innerHTML = `
+                <td>${r.road}</td>
+                <td>${r.label.split('→')[0].trim()}</td>
+                <td>${r.label.split('→')[1].trim()}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })();
+    </script>
+</body>
+</html>
+
+
+>
