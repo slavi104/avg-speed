@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Average Speed</title>
     <meta name="theme-color" content="#0b1520">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938719335702831"
-     crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-5938719335702831">
     <style>
         :root {
             --bg:#0b1520;        /* deep dark */
@@ -50,6 +49,11 @@
         @media (max-width:420px){
             table.dataTable thead th, table.dataTable tbody td { padding:6px 8px; font-size:11px; }
         }
+        /* Cookie consent banner */
+        .cookie-banner { position:fixed; left:16px; right:16px; bottom:16px; background:#0f1a20; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:14px; display:flex; gap:12px; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,.45); z-index:9999; }
+        .cookie-banner .text { flex:1; color:#c3d1dc; font-size:14px; }
+        .cookie-banner .actions { display:flex; gap:10px; }
+        .btn.inline { padding:10px 14px; font-size:14px; }
     </style>
     <!-- Google AdSense placeholder (replace client and slot IDs when you go live) -->
     <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script> -->
@@ -98,7 +102,18 @@
             <tbody></tbody>
         </table>
 
-        <div class="footer">Use at your own risk. Works offline after load.</div>
+        <div class="footer">Use at your own risk. Works offline after load. · <a href="privacy.html" style="color:#86efac; text-decoration:none;">Политика за поверителност</a> · <a href="terms.html" style="color:#86efac; text-decoration:none;">Условия за ползване</a> · <button id="cookieSettings" class="btn secondary" style="padding:6px 10px; font-size:12px; border-radius:8px;">Настройки за бисквитки</button></div>
+    </div>
+
+    <!-- Cookie consent banner -->
+    <div id="cookieBanner" class="cookie-banner" hidden>
+        <div class="text">
+            Използваме бисквитки за показване на реклами (Google AdSense). Можете да приемете или да откажете рекламни бисквитки. Повече в <a href="privacy.html" style="color:#86efac;">Политика за поверителност</a>.
+        </div>
+        <div class="actions">
+            <button id="cookieReject" class="btn secondary inline" type="button">Отказвам</button>
+            <button id="cookieAccept" class="btn inline" type="button">Приемам</button>
+        </div>
     </div>
 
     <script>
@@ -331,6 +346,38 @@
             `;
             tbody.appendChild(tr);
         });
+    })();
+    </script>
+    <script>
+    // ===== Consent & AdSense loader =====
+    (function(){
+        const CONSENT_KEY = 'cookie_consent_v1';
+        function getConsent(){ try { return localStorage.getItem(CONSENT_KEY); } catch(e){ return null; } }
+        function setConsent(value){ try { localStorage.setItem(CONSENT_KEY, value); } catch(e){} }
+        function loadAdsense(){
+            if(document.getElementById('adsbygoogle-js')) return;
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938719335702831';
+            s.crossOrigin = 'anonymous';
+            s.id = 'adsbygoogle-js';
+            document.head.appendChild(s);
+        }
+        function showBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.hidden = false; } }
+        function hideBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.hidden = true; } }
+
+        // Wire UI
+        var acceptBtn = document.getElementById('cookieAccept');
+        var rejectBtn = document.getElementById('cookieReject');
+        var settingsBtn = document.getElementById('cookieSettings');
+        if(acceptBtn){ acceptBtn.addEventListener('click', function(){ setConsent('accepted'); hideBanner(); loadAdsense(); }); }
+        if(rejectBtn){ rejectBtn.addEventListener('click', function(){ setConsent('rejected'); hideBanner(); }); }
+        if(settingsBtn){ settingsBtn.addEventListener('click', function(){ showBanner(); }); }
+
+        // Init
+        var c = getConsent();
+        if(c === 'accepted') { loadAdsense(); }
+        else { showBanner(); }
     })();
     </script>
 </body>
