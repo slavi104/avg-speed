@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-# Crawl-delay can be uncommented if your server is rate-limited
-# Crawl-delay: 2
-
-Sitemap: https://example.com/sitemap.xml
-
+Sitemap: https://sredna-skorost.online/sitemap.xml
