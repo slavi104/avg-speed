@@ -102,6 +102,7 @@
         }
         /* Cookie consent banner */
         .cookie-banner { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:500px; background:var(--panel); border:1px solid var(--border-strong); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:16px; box-shadow:0 20px 40px rgba(0,0,0,.3); z-index:9999; }
+        .cookie-banner::before { content:''; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:-1; }
         .cookie-banner .text { color:var(--text-secondary); font-size:16px; text-align:center; line-height:1.5; }
         .cookie-banner .actions { display:flex; gap:12px; justify-content:center; }
         .btn.inline { padding:10px 14px; font-size:14px; }
@@ -495,6 +496,9 @@
             s.id = 'adsbygoogle-js';
             document.head.appendChild(s);
         }
+        
+        // Load AdSense immediately on page load
+        loadAdsense();
         function showBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.style.display = 'flex'; } }
         function hideBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.style.display = 'none'; } }
 
@@ -502,14 +506,13 @@
         var acceptBtn = document.getElementById('cookieAccept');
         var rejectBtn = document.getElementById('cookieReject');
         var settingsBtn = document.getElementById('cookieSettings');
-        if(acceptBtn){ acceptBtn.addEventListener('click', function(){ setConsent('accepted'); hideBanner(); loadAdsense(); }); }
+        if(acceptBtn){ acceptBtn.addEventListener('click', function(){ setConsent('accepted'); hideBanner(); }); }
         if(rejectBtn){ rejectBtn.addEventListener('click', function(){ setConsent('rejected'); hideBanner(); }); }
         if(settingsBtn){ settingsBtn.addEventListener('click', function(){ showBanner(); }); }
 
         // Init
         var c = getConsent();
         if(c === 'accepted') { 
-            loadAdsense(); 
             hideBanner(); 
         } else if(c === 'rejected') {
             hideBanner();
