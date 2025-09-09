@@ -101,9 +101,9 @@
             table.dataTable thead th, table.dataTable tbody td { padding:6px 8px; font-size:11px; }
         }
         /* Cookie consent banner */
-        .cookie-banner { position:fixed; left:16px; right:16px; bottom:16px; background:#0f1a20; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:14px; display:flex; gap:12px; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,.45); z-index:9999; }
-        .cookie-banner .text { flex:1; color:#c3d1dc; font-size:14px; }
-        .cookie-banner .actions { display:flex; gap:10px; }
+        .cookie-banner { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:500px; background:var(--panel); border:1px solid var(--border-strong); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:16px; box-shadow:0 20px 40px rgba(0,0,0,.3); z-index:9999; }
+        .cookie-banner .text { color:var(--text-secondary); font-size:16px; text-align:center; line-height:1.5; }
+        .cookie-banner .actions { display:flex; gap:12px; justify-content:center; }
         .btn.inline { padding:10px 14px; font-size:14px; }
         a { color:#93c5fd; text-decoration:none; }
         a:hover { text-decoration:underline; }
@@ -501,10 +501,8 @@
             hideBanner(); 
         } else if(c === 'rejected') {
             hideBanner();
-        } else {
-            // Show banner if no consent given yet
-            showBanner();
         }
+        // Banner is visible by default, only hide if consent was already given
     })();
     </script>
     
@@ -521,9 +519,9 @@
         
         function getTheme() {
             try {
-                return localStorage.getItem(THEME_KEY) || 'dark';
+                return localStorage.getItem(THEME_KEY) || 'light';
             } catch(e) {
-                return 'dark';
+                return 'light';
             }
         }
         
