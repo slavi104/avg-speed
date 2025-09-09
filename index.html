@@ -5,10 +5,36 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Average Speed</title>
+    <title>Average Speed – Калкулатор за средна скорост (GPS)</title>
     <meta name="theme-color" content="#0b1520">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938719335702831"
-     crossorigin="anonymous"></script>
+    <meta name="description" content="Калкулатор за средна скорост по GPS. Автоматично стартира и спира в определени участъци (АМ „Тракия“, „Хемус“, „Струма“ и др.). Работи офлайн след зареждане.">
+    <meta name="keywords" content="средна скорост, GPS, калкулатор, България, ограничение на скоростта, AM Тракия, Хемус, Струма">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="canonical" href="https://sredna-skorost.online/">
+    <link rel="alternate" href="https://sredna-skorost.online/" hreflang="bg">
+    <meta property="og:locale" content="bg_BG">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Average Speed">
+    <meta property="og:title" content="Average Speed – Калкулатор за средна скорост (GPS)">
+    <meta property="og:description" content="Калкулатор за средна скорост по GPS. Автоматично стартира/спира в определени участъци. Работи офлайн.">
+    <meta property="og:url" content="https://sredna-skorost.online/">
+    <meta property="og:image" content="/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Average Speed – Калкулатор за средна скорост (GPS)">
+    <meta name="twitter:description" content="Калкулатор за средна скорост по GPS. Автоматично стартира/спира в определени участъци. Работи офлайн.">
+    <meta name="twitter:image" content="/og-image.png">
+    <meta name="google-site-verification" content="REPLACE_WITH_GSC_TOKEN">
+    <meta name="google-adsense-account" content="ca-pub-5938719335702831">
+    <script>
+    (function(){
+        try {
+            var url = (location && location.origin ? location.origin : '') + (location && location.pathname ? location.pathname : '/');
+            var canon = document.querySelector('link[rel="canonical"]'); if(canon && url) canon.setAttribute('href', url);
+            var ogUrl = document.querySelector('meta[property="og:url"]'); if(ogUrl && url) ogUrl.setAttribute('content', url);
+        } catch(e) {}
+    })();
+    </script>
     <style>
         :root {
             --bg:#0b1520;        /* deep dark */
@@ -51,16 +77,30 @@
         @media (max-width:420px){
             table.dataTable thead th, table.dataTable tbody td { padding:6px 8px; font-size:11px; }
         }
+        /* Cookie consent banner */
+        .cookie-banner { position:fixed; left:16px; right:16px; bottom:16px; background:#0f1a20; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:14px; display:flex; gap:12px; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,.45); z-index:9999; }
+        .cookie-banner .text { flex:1; color:#c3d1dc; font-size:14px; }
+        .cookie-banner .actions { display:flex; gap:10px; }
+        .btn.inline { padding:10px 14px; font-size:14px; }
         a { color:#93c5fd; text-decoration:none; }
         a:hover { text-decoration:underline; }
     </style>
-    <!-- Google AdSense placeholder (replace client and slot IDs when you go live) -->
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Average Speed – Средна скорост калкулатор",
+      "url": "https://sredna-skorost.online/",
+      "inLanguage": "bg",
+      "description": "Калкулатор за средна скорост по GPS. Автоматично стартира и спира в определени участъци."
+    }
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="card center" id="avgCard">
-            <div class="title">📍 <span>Average Speed</span></div>
+            <h1 class="title">📍 <span>Average Speed</span></h1>
             <div class="big" id="avgSpeedValue">0<span class="unit"> km/h</span></div>
         </div>
 
@@ -103,7 +143,26 @@
 
         <div class="footer">
             Use at your own risk. Works offline after load. |
+            Contact: <a href="mailto:slavi104@gmail.com">slavi104@gmail.com</a> |
+            <a href="privacy.html" style="color:#86efac; text-decoration:none;">Политика за поверителност</a> |
+            <a href="terms.html" style="color:#86efac; text-decoration:none;">Условия за ползване</a> |
+            <button id="cookieSettings" class="btn secondary" style="padding:6px 10px; font-size:12px; border-radius:8px;">Настройки за бисквитки</button>
+        </div>
+    </div>
+
+    <!-- Cookie consent banner -->
+    <div id="cookieBanner" class="cookie-banner" hidden>
+        <div class="text">
+            Използваме бисквитки за показване на реклами (Google AdSense). Можете да приемете или да откажете рекламни бисквитки. Повече в <a href="privacy.html" style="color:#86efac;">Политика за поверителност</a>.
+        </div>
+        <div class="actions">
+            <button id="cookieReject" class="btn secondary inline" type="button">Отказвам</button>
+            <button id="cookieAccept" class="btn inline" type="button">Приемам</button>
+=======
+        <div class="footer">
+            Use at your own risk. Works offline after load. |
             Contact: <a href="mailto:slavi104@gmail.com">slavi104@gmail.com</a>
+>>>>>>> be7c1af (feat: range proximity checks each second, active range highlight, duration freeze on stop, friendlier distance format, footer contact)
         </div>
     </div>
 
@@ -382,6 +441,38 @@
             `;
             tbody.appendChild(tr);
         });
+    })();
+    </script>
+    <script>
+    // ===== Consent & AdSense loader =====
+    (function(){
+        const CONSENT_KEY = 'cookie_consent_v1';
+        function getConsent(){ try { return localStorage.getItem(CONSENT_KEY); } catch(e){ return null; } }
+        function setConsent(value){ try { localStorage.setItem(CONSENT_KEY, value); } catch(e){} }
+        function loadAdsense(){
+            if(document.getElementById('adsbygoogle-js')) return;
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938719335702831';
+            s.crossOrigin = 'anonymous';
+            s.id = 'adsbygoogle-js';
+            document.head.appendChild(s);
+        }
+        function showBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.hidden = false; } }
+        function hideBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.hidden = true; } }
+
+        // Wire UI
+        var acceptBtn = document.getElementById('cookieAccept');
+        var rejectBtn = document.getElementById('cookieReject');
+        var settingsBtn = document.getElementById('cookieSettings');
+        if(acceptBtn){ acceptBtn.addEventListener('click', function(){ setConsent('accepted'); hideBanner(); loadAdsense(); }); }
+        if(rejectBtn){ rejectBtn.addEventListener('click', function(){ setConsent('rejected'); hideBanner(); }); }
+        if(settingsBtn){ settingsBtn.addEventListener('click', function(){ showBanner(); }); }
+
+        // Init
+        var c = getConsent();
+        if(c === 'accepted') { loadAdsense(); }
+        else { showBanner(); }
     })();
     </script>
 </body>

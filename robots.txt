@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sredna-skorost.online/sitemap.xml
