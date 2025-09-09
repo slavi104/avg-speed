@@ -102,7 +102,10 @@
         }
         /* Cookie consent banner */
         .cookie-banner { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:500px; background:var(--panel); border:1px solid var(--border-strong); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:16px; box-shadow:0 20px 40px rgba(0,0,0,.3); z-index:9999; }
-        .cookie-banner::before { content:''; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:-1; }
+        .cookie-banner-backdrop { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9998; }
+        @media (max-width: 768px) {
+            .cookie-banner { width: calc(100% - 32px); margin: 0 16px; }
+        }
         .cookie-banner .text { color:var(--text-secondary); font-size:16px; text-align:center; line-height:1.5; }
         .cookie-banner .actions { display:flex; gap:12px; justify-content:center; }
         .btn.inline { padding:10px 14px; font-size:14px; }
@@ -194,6 +197,7 @@
     </div>
 
     <!-- Cookie consent banner -->
+    <div id="cookieBannerBackdrop" class="cookie-banner-backdrop" style="display: none;"></div>
     <div id="cookieBanner" class="cookie-banner">
         <div class="text">
             Използваме бисквитки за показване на реклами (Google AdSense). Можете да приемете или да откажете рекламни бисквитки. Повече в <a href="privacy.html" style="color:#86efac;">Политика за поверителност</a>.
@@ -499,8 +503,18 @@
         
         // Load AdSense immediately on page load
         loadAdsense();
-        function showBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.style.display = 'flex'; } }
-        function hideBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.style.display = 'none'; } }
+        function showBanner(){ 
+            var b = document.getElementById('cookieBanner'); 
+            var backdrop = document.getElementById('cookieBannerBackdrop');
+            if(b){ b.style.display = 'flex'; }
+            if(backdrop){ backdrop.style.display = 'block'; }
+        }
+        function hideBanner(){ 
+            var b = document.getElementById('cookieBanner'); 
+            var backdrop = document.getElementById('cookieBannerBackdrop');
+            if(b){ b.style.display = 'none'; }
+            if(backdrop){ backdrop.style.display = 'none'; }
+        }
 
         // Wire UI
         var acceptBtn = document.getElementById('cookieAccept');
