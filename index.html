@@ -43,12 +43,30 @@
             --accent:#22c55e;    /* green */
             --accent-weak:#16a34a;
             --danger:#ef4444;
+            --text-primary:#e6edf3;
+            --text-secondary:#d9e3ea;
+            --border:rgba(255,255,255,.04);
+            --border-strong:rgba(255,255,255,.08);
+        }
+        
+        [data-theme="light"] {
+            --bg:#f8fafc;        /* light background */
+            --panel:#ffffff;     /* white card */
+            --muted:#64748b;     /* muted text */
+            --accent:#22c55e;    /* green */
+            --accent-weak:#16a34a;
+            --danger:#ef4444;
+            --text-primary:#1e293b;
+            --text-secondary:#334155;
+            --border:rgba(0,0,0,.06);
+            --border-strong:rgba(0,0,0,.12);
         }
         html,body { height:100%; }
         body {
-            margin:0; background:var(--bg); color:#e6edf3; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; align-items:center; }
+            margin:0; background:var(--bg); color:var(--text-primary); font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; align-items:center; }
         .container { width:100%; max-width:720px; padding:16px; box-sizing:border-box; }
-        .card { background:var(--panel); border-radius:16px; padding:18px; box-shadow:0 6px 20px rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.04); }
+        .card { background:var(--panel); border-radius:16px; padding:18px; box-shadow:0 6px 20px rgba(0,0,0,.15); border:1px solid var(--border); }
+        #avgCard { margin-bottom:20px; }
         .row { display:flex; gap:16px; }
         .center { text-align:center; }
         .title { display:flex; align-items:center; gap:8px; color:var(--muted); font-weight:600; letter-spacing:.2px; }
@@ -57,22 +75,25 @@
         .medium { font-size:54px; font-weight:800; color:#22c55e; }
         .muted { color:var(--muted); }
         .kpis { display:flex; justify-content:space-between; gap:12px; font-weight:700; }
-        .kpis .box { flex:1; text-align:center; padding:14px 10px; border:1px solid rgba(255,255,255,.06); border-radius:12px; background:rgba(255,255,255,.02); }
+        .kpis .box { flex:1; text-align:center; padding:14px 10px; border:1px solid var(--border); border-radius:12px; background:var(--bg); }
         .btn { border:none; border-radius:14px; padding:16px 18px; font-weight:800; font-size:18px; color:#07130c; background:linear-gradient(180deg,#34d061,#18b74f); width:100%; display:flex; align-items:center; justify-content:center; gap:10px; }
         .btn:disabled { filter:grayscale(.3) brightness(.8); opacity:.7; }
-        .btn.secondary { background:#0f1720; color:#cbd5e1; border:1px solid rgba(255,255,255,.08); }
+        .btn.secondary { background:var(--panel); color:var(--text-secondary); border:1px solid var(--border-strong); }
         .btn.danger { background:linear-gradient(180deg,#ef4444,#dc2626); color:#fff; }
         .pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(34,197,94,.12); color:#a7f3d0; font-weight:700; font-size:14px; }
-        .rangeBox { margin-top:16px; padding:14px 16px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:12px; transition:background .2s, border-color .2s, box-shadow .2s; }
+        .rangeBox { margin-top:16px; padding:14px 16px; background:var(--bg); border:1px solid var(--border); border-radius:12px; transition:background .2s, border-color .2s, box-shadow .2s; }
         .rangeBox.active { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.55); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset; }
         .ad { margin:14px 0; background:#0e171f; border:1px dashed rgba(255,255,255,.18); border-radius:12px; color:#89a3b5; padding:16px; text-align:center; }
-        .footer { color:#6b7785; font-size:12px; text-align:center; padding:12px 0 24px; }
+        .footer { color:var(--muted); font-size:12px; text-align:center; padding:12px 0 24px; }
+        .theme-toggle { position:fixed; top:16px; right:16px; background:var(--panel); border:1px solid var(--border-strong); border-radius:50px; padding:8px; cursor:pointer; z-index:1000; transition:all .2s; }
+        .theme-toggle:hover { background:var(--accent); color:white; }
+        .theme-toggle svg { width:20px; height:20px; }
         @media (max-width:420px){ .big{font-size:96px;} .medium{font-size:42px;} }
         /* Ranges table */
         table.dataTable { width:100%; border-collapse:collapse; border-spacing:0; }
-        table.dataTable thead th { background:#0f1a25; color:#c3d1dc; text-align:left; font-weight:800; font-size:12px; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); }
-        table.dataTable tbody td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); font-weight:600; color:#d9e3ea; font-size:12px; white-space:normal; word-break:break-word; }
-        table.dataTable tbody tr:nth-child(odd) td { background:rgba(255,255,255,.02); }
+        table.dataTable thead th { background:var(--bg); color:var(--text-secondary); text-align:left; font-weight:800; font-size:12px; padding:8px 10px; border-bottom:1px solid var(--border); }
+        table.dataTable tbody td { padding:8px 10px; border-bottom:1px solid var(--border); font-weight:600; color:var(--text-secondary); font-size:12px; white-space:normal; word-break:break-word; }
+        table.dataTable tbody tr:nth-child(odd) td { background:var(--bg); }
         table.dataTable tbody tr.active td { background:rgba(34,197,94,.12); color:#c6f3d7; }
         @media (max-width:420px){
             table.dataTable thead th, table.dataTable tbody td { padding:6px 8px; font-size:11px; }
@@ -98,6 +119,13 @@
     </script>
 </head>
 <body>
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" class="theme-toggle" title="Превключване на тема">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+        </svg>
+    </button>
+    
     <div class="container">
         <div class="card center" id="avgCard">
             <h1 class="title">📍 <span>Средна скорост</span></h1>
@@ -453,8 +481,8 @@
             s.id = 'adsbygoogle-js';
             document.head.appendChild(s);
         }
-        function showBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.hidden = false; } }
-        function hideBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.hidden = true; } }
+        function showBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.style.display = 'flex'; } }
+        function hideBanner(){ var b = document.getElementById('cookieBanner'); if(b){ b.style.display = 'none'; } }
 
         // Wire UI
         var acceptBtn = document.getElementById('cookieAccept');
@@ -471,8 +499,60 @@
             hideBanner(); 
         } else if(c === 'rejected') {
             hideBanner();
+        } else {
+            // Show banner if no consent given yet
+            showBanner();
         }
-        // Banner is visible by default, only hide if consent was already given
+    })();
+    </script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+    (function(){
+        const THEME_KEY = 'theme_preference';
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        // Sun and Moon SVG paths
+        const sunIcon = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+        const moonIcon = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+        
+        function getTheme() {
+            try {
+                return localStorage.getItem(THEME_KEY) || 'dark';
+            } catch(e) {
+                return 'dark';
+            }
+        }
+        
+        function setTheme(theme) {
+            try {
+                localStorage.setItem(THEME_KEY, theme);
+            } catch(e) {}
+        }
+        
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            if(themeIcon) {
+                themeIcon.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+            applyTheme(newTheme);
+        }
+        
+        // Initialize theme
+        const savedTheme = getTheme();
+        applyTheme(savedTheme);
+        
+        // Add click listener
+        if(themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
     })();
     </script>
 </body>
