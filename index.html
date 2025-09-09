@@ -37,7 +37,8 @@
         .btn.secondary { background:#0f1720; color:#cbd5e1; border:1px solid rgba(255,255,255,.08); }
         .btn.danger { background:linear-gradient(180deg,#ef4444,#dc2626); color:#fff; }
         .pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(34,197,94,.12); color:#a7f3d0; font-weight:700; font-size:14px; }
-        .rangeBox { margin-top:16px; padding:14px 16px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:12px; }
+        .rangeBox { margin-top:16px; padding:14px 16px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:12px; transition:background .2s, border-color .2s, box-shadow .2s; }
+        .rangeBox.active { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.55); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset; }
         .ad { margin:14px 0; background:#0e171f; border:1px dashed rgba(255,255,255,.18); border-radius:12px; color:#89a3b5; padding:16px; text-align:center; }
         .footer { color:#6b7785; font-size:12px; text-align:center; padding:12px 0 24px; }
         @media (max-width:420px){ .big{font-size:96px;} .medium{font-size:42px;} }
@@ -50,6 +51,8 @@
         @media (max-width:420px){
             table.dataTable thead th, table.dataTable tbody td { padding:6px 8px; font-size:11px; }
         }
+        a { color:#93c5fd; text-decoration:none; }
+        a:hover { text-decoration:underline; }
     </style>
     <!-- Google AdSense placeholder (replace client and slot IDs when you go live) -->
     <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script> -->
@@ -98,7 +101,10 @@
             <tbody></tbody>
         </table>
 
-        <div class="footer">Use at your own risk. Works offline after load.</div>
+        <div class="footer">
+            Use at your own risk. Works offline after load. |
+            Contact: <a href="mailto:slavi104@gmail.com">slavi104@gmail.com</a>
+        </div>
     </div>
 
     <script>
@@ -169,9 +175,12 @@
         startedAt: null,
         elapsedMsAccumulated: 0,
         lastFix: null,
+        lastKnown: null,
         distanceMeters: 0,
         activeRange: null, // object from ROAD_RANGES
         awaitingStart: true,
+        lastStartTriggerIdx: null,
+        lastStartTriggerTs: 0,
     };
 
     // ===== Core logic =====
@@ -198,6 +207,51 @@
         });
     }
 
+    function detectActiveRangeIndex(lat, lon){
+        const here = {lat, lon};
+        for(let i=0;i<ROAD_RANGES.length;i++){
+            const r = ROAD_RANGES[i];
+            if(isWithin(here, r.start) || isWithin(here, r.end)) return i;
+        }
+        return -1;
+    }
+
+    function forceRestartTracking(){
+        stopTracking();
+        state.distanceMeters = 0;
+        state.elapsedMsAccumulated = 0;
+        state.lastFix = null;
+        startManual();
+    }
+
+    function handleRangeLogic(lat, lon){
+        const now = Date.now();
+        const idx = detectActiveRangeIndex(lat, lon);
+        state.activeRange = idx >= 0 ? ROAD_RANGES[idx] : null;
+        if(idx >= 0){
+            const r = ROAD_RANGES[idx];
+            const atStart = isWithin({lat, lon}, r.start);
+            const atEnd = isWithin({lat, lon}, r.end);
+            if(atStart){
+                const recentlyTriggeredSame = (state.lastStartTriggerIdx === idx) && (now - state.lastStartTriggerTs < 10000);
+                if(!recentlyTriggeredSame){
+                    if(state.tracking){
+                        forceRestartTracking();
+                    } else {
+                        startManual();
+                    }
+                    state.lastStartTriggerIdx = idx; state.lastStartTriggerTs = now; state.awaitingStart = false;
+                }
+            }
+            if(atEnd && state.tracking){
+                stopTracking();
+                state.awaitingStart = true;
+            }
+        } else {
+            if(!state.tracking){ state.awaitingStart = true; }
+        }
+    }
+
     // Poll location every second to ensure real-time updates
     function startPolling(){
         if(state.pollId!=null) return;
@@ -205,7 +259,10 @@
         // Start a single continuous watch to avoid repeated permission prompts
         ensureWatch();
         // Refresh UI every second so average speed progresses with time
-        state.pollId = setInterval(()=>{ updateUi(); }, 1000);
+        state.pollId = setInterval(()=>{
+            if(state.lastKnown){ handleRangeLogic(state.lastKnown.lat, state.lastKnown.lon); }
+            updateUi();
+        }, 1000);
     }
     function stopPolling(){ if(state.pollId!=null){ clearInterval(state.pollId); state.pollId=null; } }
 
@@ -225,19 +282,9 @@
         const {latitude:lat, longitude:lon, speed} = pos.coords; // speed in m/s (may be null)
         const now = Date.now();
 
-        // Determine active range and auto-start/stop (re-evaluate on every fix)
-        state.activeRange = detectActiveRange(lat, lon);
-        if(state.activeRange){
-            const atStart = isWithin({lat, lon}, state.activeRange.start);
-            const atEnd = isWithin({lat, lon}, state.activeRange.end);
-            // Immediately start when entering any range's start gate
-            if(state.awaitingStart && atStart){ startManual(); }
-            // Auto stop when reaching end gate and arm next auto-start
-            if(state.tracking && atEnd){ stopTracking(); state.awaitingStart = true; }
-        } else {
-            // Left all ranges
-            if(!state.tracking){ state.awaitingStart = true; }
-        }
+        // Save last known and run range logic on every fix
+        state.lastKnown = {lat, lon};
+        handleRangeLogic(lat, lon);
 
         // Distance accumulation
         if(state.tracking){
@@ -283,8 +330,12 @@
         }
         el('avgSpeedValue').innerHTML = `${Number.isFinite(avgKmh)?Math.round(avgKmh):0}<span class="unit"> km/h</span>`;
 
-        // Range label
+        // Range label + visual cue
+        const rangeBox = document.querySelector('.rangeBox');
         el('activeRange').textContent = state.activeRange ? `${state.activeRange.road} — ${state.activeRange.label}` : 'No active range';
+        if(rangeBox){
+            if(state.activeRange){ rangeBox.classList.add('active'); } else { rangeBox.classList.remove('active'); }
+        }
         // Highlight active row in table
         const tbody = document.querySelector('#rangesTable tbody');
         if(tbody){
